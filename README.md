@@ -215,7 +215,7 @@ If a site-level representation is required later, it will be created as a **deri
 
 The exact aggregation strategy will be determined after understanding how the Natura 2000 layer needs to interact with nitrogen-deposition data.
 
-### Phase 3 — Investigate the `intersects()` Result
+## Phase 3 — Investigate the `intersects()` Result
 
 During the earlier investigation of Hollands Diep, three spatial records were identified:
 
