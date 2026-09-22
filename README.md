@@ -43,6 +43,7 @@ Atmospheric transport
 Deposition
     ↓
 Environmental impact
+```
 
 ## Natura 2000 Record-to-Site Validation
 
@@ -58,37 +59,27 @@ The analysis was divided into three phases:
 
 ---
 
-### Phase 1 — Validate the Record-to-Site Relationship
+
+## Phase 1 — Validate the Record-to-Site Relationship
 
 The `nr` attribute was investigated to determine whether it can be used to group multiple spatial records belonging to the same Natura 2000 site.
 
 The number of spatial records associated with each `nr` was calculated using:
 
 ```python
-site_record_counts = (
-    natura.groupby("nr")
-    .size()
-    .sort_values(ascending=False)
-)
+site_record_counts = natura.groupby("nr").size().sort_values(ascending=False)
 
 site_record_counts.head(20)
+```
+
 The result showed that several Natura 2000 sites have multiple spatial records.
 
 The distribution of records per site was then calculated:
 
 ```python
-site_record_counts = (
-    natura.groupby("nr")
-    .size()
-    .sort_values(ascending=False)
-)
-```
-
-The distribution was obtained using:
-
-```python
 site_record_counts.value_counts().sort_index()
 ```
+
 
 ### Result
 
