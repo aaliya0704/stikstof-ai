@@ -35,13 +35,9 @@ A central concept in StikstofAI is the distinction between:
 
 ```text
 Emissions
-    ↓
-Atmospheric concentrations
-    ↓
-Atmospheric transport
-    ↓
-Deposition
-    ↓
+Atmospheric concentrations  
+Atmospheric transport   
+Deposition  
 Environmental impact
 ```
 
