@@ -43,3 +43,32 @@ Atmospheric transport
 Deposition
     ↓
 Environmental impact
+
+## Natura 2000 Record-to-Site Validation
+
+After loading and exploring the official Natura 2000 GeoPackage, the next step was to determine how individual spatial records relate to actual Natura 2000 sites.
+
+This validation was necessary before creating any derived site-level dataset. A spatial record cannot automatically be assumed to represent one complete Natura 2000 site.
+
+The analysis was divided into three phases:
+
+1. Validate the record-to-site relationship
+2. Analyze designation combinations
+3. Investigate the spatial relationships between designation geometries
+
+---
+
+### Phase 1 — Validate the Record-to-Site Relationship
+
+The `nr` attribute was investigated to determine whether it can be used to group multiple spatial records belonging to the same Natura 2000 site.
+
+The number of spatial records associated with each `nr` was calculated using:
+
+```python
+site_record_counts = (
+    natura.groupby("nr")
+    .size()
+    .sort_values(ascending=False)
+)
+
+site_record_counts.head(20)
