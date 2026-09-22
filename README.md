@@ -60,7 +60,7 @@ The analysis was divided into three phases:
 ---
 
 
-## Phase 1 — Validate the Record-to-Site Relationship
+## Phase 1 — Validating the Record-to-Site Relationship
 
 The `nr` attribute was investigated to determine whether it can be used to group multiple spatial records belonging to the same Natura 2000 site.
 
@@ -125,7 +125,7 @@ Some sites are represented by multiple spatial records.
 
 This distinction is important for **StikstofAI** because treating all 209 records as independent Natura 2000 sites could result in duplicate representation of the same real-world site during later spatial analysis or machine-learning feature engineering.
 
-## Phase 2 — Understand the Designation Combinations
+## Phase 2 — Understanding the Designation Combinations
 
 After determining that some sites contain multiple records, the next question was:
 
@@ -215,7 +215,7 @@ If a site-level representation is required later, it will be created as a **deri
 
 The exact aggregation strategy will be determined after understanding how the Natura 2000 layer needs to interact with nitrogen-deposition data.
 
-## Phase 3 — Investigate the `intersects()` Result
+## Phase 3 — Investigating the `intersects()` Result
 
 During the earlier investigation of Hollands Diep, three spatial records were identified:
 
@@ -272,17 +272,6 @@ It does **not** require them to share an area.
 
 For example:
 
-```text
-Polygon A
-████████████
-████████████
-████████████
-           ┃
-           ┃
-           ┃
-       Polygon B
-```
-
 Two polygons can touch along a boundary without sharing any interior area.
 
 To determine exactly what type of spatial contact was occurring, the geometry type of each intersection was inspected:
@@ -304,20 +293,6 @@ HR ∩ VR+HR geometry type: MultiLineString
 ```
 
 A `MultiLineString` intersection indicates that the geometries share line-based spatial boundaries rather than a polygonal area.
-
-Therefore, the results can be summarized as:
-
-```text
-VR ∩ HR
-    ↓
-MultiLineString
-    ↓
-shared boundary/contact
-    ↓
-0 m² shared area
-```
-
-and similarly for the other two pairs.
 
 This resolves the apparent contradiction between `intersects() == True` and an intersection area of `0 m²`.
 
