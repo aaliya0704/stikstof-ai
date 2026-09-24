@@ -346,3 +346,193 @@ all intersect according to Shapely's `intersects()` predicate.
 However, their pairwise intersection areas are zero and their intersection geometries are `MultiLineString`.
 
 This indicates spatial contact along boundaries rather than overlapping polygon interiors.
+
+## Phase 4 — Construct Site-Level Natura 2000 Dataset
+
+### Objective
+
+The original Natura 2000 dataset contains multiple spatial records for some protected areas. Therefore, the original dataset cannot be directly treated as a one-row-per-site dataset.
+
+The objective of this phase was to construct a clean **site-level Natura 2000 dataset** containing one spatial record for each unique Natura 2000 site.
+
+The resulting dataset will provide the spatial foundation for connecting Natura 2000 areas with nitrogen deposition and other environmental variables in later phases.
+
+---
+
+### 4.1 Why a Site-Level Dataset Was Needed
+
+The original PDOK Natura 2000 dataset contains:
+
+* **209 spatial records**
+* **162 unique Natura 2000 sites**
+
+This means that a spatial record does not necessarily represent one complete real-world Natura 2000 site.
+
+Some sites occur across multiple records because different spatial records represent different designation categories.
+
+For example, **Hollands Diep** contains three spatial records:
+
+* `VR` — Birds Directive
+* `HR` — Habitats Directive
+* `VR+HR` — Birds + Habitats Directive
+
+The three records share the same Natura 2000 site number but contain separate geometries and designation information.
+
+This structure was investigated in Phase 1–3 before constructing the site-level representation.
+
+---
+
+### 4.2 Site-Level Representation
+
+The site-level dataset was constructed using the Natura 2000 site number (`nr`) as the grouping key.
+
+The geometry was dissolved by `nr` so that all spatial records belonging to the same Natura 2000 site were combined into a single geometry.
+
+Site attributes were aggregated separately rather than relying on a generic dissolve operation. This was necessary because directly dissolving the complete dataset could discard or obscure information contained in fields such as designation type and site codes.
+
+The resulting dataset contains:
+
+| Column              | Description                                     |
+| ------------------- | ----------------------------------------------- |
+| `nr`                | Natura 2000 site number                         |
+| `naam_n2k`          | Natura 2000 site name                           |
+| `designation_types` | Designation categories associated with the site |
+| `geometry`          | Dissolved site-level geometry                   |
+| `site_area_m2`      | Calculated site geometry area in square metres  |
+| `site_area_ha`      | Calculated site geometry area in hectares       |
+
+---
+
+### 4.3 Geometry Construction
+
+The geometry was constructed separately from the attribute aggregation:
+
+```python
+natura_site = natura[["nr", "geometry"]].dissolve(by="nr", as_index=False)
+```
+
+This produces one geometry for each unique Natura 2000 site number.
+
+The site names were then added separately:
+
+```python
+site_names = natura.groupby("nr")["naam_n2k"].first().reset_index()
+```
+
+This was considered appropriate because the previous validation showed that every Natura 2000 site number corresponds to exactly one unique site name.
+
+Designation information was also aggregated explicitly:
+
+```python
+designation_by_site = (
+    natura.groupby("nr")["beschermin"]
+    .apply(lambda x: ", ".join(sorted(x.unique())))
+    .reset_index(name="designation_types")
+)
+```
+
+The resulting tables were then merged into the site-level GeoDataFrame.
+
+---
+
+### 4.4 Site Area Calculation
+
+Because the dataset uses the projected CRS **EPSG:28992 (Amersfoort / RD New)**, the geometry coordinates are measured in metres.
+
+Therefore, geometry area can be calculated directly in square metres:
+
+```python
+natura_site["site_area_m2"] = natura_site.geometry.area
+```
+
+The area was also converted to hectares:
+
+```python
+natura_site["site_area_ha"] = natura_site["site_area_m2"] / 10_000
+```
+
+These are **areas calculated from the derived site-level geometries**. They should not automatically be interpreted as official published area values.
+
+---
+
+### 4.5 Final Validation
+
+The completed site-level dataset was validated before proceeding to the next phase.
+
+The following checks were performed:
+
+```python
+print("Number of site records:", len(natura_site))
+print("Unique site IDs:", natura_site["nr"].nunique())
+print("Duplicate site IDs:", natura_site["nr"].duplicated().sum())
+print("Missing site names:", natura_site["naam_n2k"].isna().sum())
+print("Missing designation types:", natura_site["designation_types"].isna().sum())
+print("Missing geometries:", natura_site.geometry.isna().sum())
+print("Invalid geometries:", (~natura_site.geometry.is_valid).sum())
+print("Sites with area <= 0:", (natura_site["site_area_m2"] <= 0).sum())
+print("CRS:", natura_site.crs)
+print(natura_site.geometry.geom_type.value_counts())
+```
+
+The validation produced the expected results:
+
+* **162 site records**
+* **162 unique Natura 2000 site IDs**
+* **0 duplicate site IDs**
+* **0 missing site names**
+* **0 missing designation types**
+* **0 missing geometries**
+* **0 invalid geometries**
+* **0 sites with non-positive area**
+* CRS: **EPSG:28992**
+* Valid polygonal site geometries
+
+This confirms that the site-level representation is structurally consistent and ready for integration with additional spatial datasets.
+
+---
+
+### 4.6 Result
+
+Phase 4 transformed the original record-level Natura 2000 dataset into a clean site-level spatial dataset.
+
+The transformation can be summarized as:
+
+```text
+Original PDOK dataset
+        │
+        ├── 209 spatial records
+        │
+        ├── Multiple records can belong to one site
+        │
+        └── Different designation categories
+                    │
+                    ▼
+          Group by Natura 2000 `nr`
+                    │
+                    ▼
+            Dissolve geometries
+                    │
+                    ▼
+        Aggregate site attributes
+                    │
+                    ▼
+       Calculate site-level areas
+                    │
+                    ▼
+        Validate resulting dataset
+                    │
+                    ▼
+          162 Natura 2000 sites
+```
+
+The resulting `natura_site` GeoDataFrame will serve as the **site-level spatial foundation** for subsequent nitrogen-deposition analysis.
+
+---
+
+### Phase 4 Status
+
+**Completed**
+
+The Natura 2000 dataset is now prepared at the site level and ready to be combined with nitrogen deposition data.
+
+**Next:** Phase 5 — Integrate RIVM historical nitrogen deposition data.
