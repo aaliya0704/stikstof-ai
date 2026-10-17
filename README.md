@@ -105,13 +105,9 @@ site_record_counts.value_counts().sort_index()
 This means:
 
 | Records associated with a site | Number of sites |
-
 | -----------------------------: | --------------: |
-
 |                              1 |             121 |
-
 |                              2 |              35 |
-
 |                              3 |               6 |
 
 Therefore:
