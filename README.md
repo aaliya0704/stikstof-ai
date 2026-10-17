@@ -502,21 +502,14 @@ Site attributes were aggregated separately rather than relying on a generic diss
 
 The resulting dataset contains:
 
-| Column              | Description                                     |
-
+| Column              | Description                                     |
 | ------------------- | ----------------------------------------------- |
-
-| `nr`                | Natura 2000 site number                         |
-
-| `naam_n2k`          | Natura 2000 site name                           |
-
+| `nr`                | Natura 2000 site number                         |
+| `naam_n2k`          | Natura 2000 site name                           |
 | `designation_types` | Designation categories associated with the site |
-
-| `geometry`          | Dissolved site-level geometry                   |
-
-| `site_area_m2`      | Calculated site geometry area in square metres  |
-
-| `site_area_ha`      | Calculated site geometry area in hectares       |
+| `geometry`          | Dissolved site-level geometry                   |
+| `site_area_m2`      | Calculated site geometry area in square metres  |
+| `site_area_ha`      | Calculated site geometry area in hectares       |
 
 ---
 
