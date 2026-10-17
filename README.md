@@ -885,6 +885,19 @@ The maps use a diverging colour scale centred on zero:
 
 The 2005–2022 and 2005–2024 maps use the same colour limits, allowing the magnitudes of change to be compared visually. The 2022–2024 map uses a separate scale centred on zero because its range of changes differs. Consequently, colour intensity should not be compared directly between that map and the first two maps.
 
+### Spatial Change Maps
+
+The following figure compares changes in modeled nitrogen deposition
+across the Netherlands for three periods: 2005–2022, 2005–2024,
+and 2022–2024.
+
+![Spatial changes in nitrogen deposition across the Netherlands](reports/figures/nitrogen_deposition_change_maps.png)
+
+*Figure: Cell-level changes in RIVM-modeled nitrogen deposition.
+Blue indicates decreases, red indicates increases, and light colours
+represent changes closer to zero. The 2022–2024 map uses a different
+colour scale from the first two maps.*
+
 ### Spatial findings
 
 - The 2005–2022 comparison shows decreases in 43,957 of 43,959 grid cells. The map displays these changes using varying shades of blue, with cells whose changes are closer to zero appearing pale blue or nearly white.
